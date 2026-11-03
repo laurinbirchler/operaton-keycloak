@@ -8,18 +8,20 @@
 
 <form class="form-horizontal">
   <div class="control-group">
-    <label class="control-label">Name</label>
+    <label class="control-label" for="name">Name</label>
     <div class="controls">
-      <input type="text" 
+      <input type="text"
+             id="name"
              cam-variable-name="name"
              readonly="true" 
              class="form-control" />      
     </div>
   </div>
   <div class="control-group">
-    <label class="control-label">Approve?</label>
+    <label class="control-label" for="approved">Approve?</label>
     <div class="controls">
       <input type="checkbox"
+             id="approved"
              cam-variable-name="approved"
              cam-variable-type="Boolean"
              name="approved"
