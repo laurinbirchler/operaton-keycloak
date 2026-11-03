@@ -1,12 +1,18 @@
 package org.operaton.bpm.extension.keycloak.showcase;
 
-public interface ProcessConstants {
+public final class ProcessConstants {
 
-  interface Variable {
+  private ProcessConstants() {
+  }
+
+  public static final class Variable {
+
+    private Variable() {
+    }
 
     /**
      * The name of the user to register.
      */
-    String NAME = "name";
+    public static final String NAME = "name";
   }
 }
