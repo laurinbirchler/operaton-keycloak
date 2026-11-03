@@ -59,8 +59,9 @@ public class RestApiSecurityConfig {
         .getRequiredProperty("spring.security.oauth2.client.provider." + configProps.getProvider() + ".jwk-set-uri");
     PathPatternRequestMatcher.Builder pathPattern = PathPatternRequestMatcher.withDefaults();
 
+    // No explicit CSRF override needed: the OAuth2 resource server configurer already exempts
+    // bearer-token requests from CSRF protection, and this chain only accepts bearer tokens.
     return http.securityMatcher(pathPattern.matcher("/engine-rest/**"))
-        .csrf(csrf -> csrf.ignoringRequestMatchers(pathPattern.matcher("/engine-rest/**")))
         .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
         .oauth2ResourceServer(
             oauth2ResourceServer -> oauth2ResourceServer.jwt(jwt -> jwt.decoder(jwtDecoder).jwkSetUri(jwkSetUri)))
