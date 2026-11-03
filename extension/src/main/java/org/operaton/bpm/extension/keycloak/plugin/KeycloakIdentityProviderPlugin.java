@@ -52,17 +52,13 @@ public class KeycloakIdentityProviderPlugin extends KeycloakConfiguration implem
 
     authorizationEnabled = processEngineConfiguration.isAuthorizationEnabled();
 
-    if (!ObjectUtils.isEmpty(administratorGroupName)) {
-      if (processEngineConfiguration.getAdminGroups() == null) {
-        processEngineConfiguration.setAdminGroups(new ArrayList<>());
-      }
-      // add the configured administrator group to the engine configuration later: needs translation to group ID
+    // the configured administrator group is added to the engine configuration later: needs translation to group ID
+    if (!ObjectUtils.isEmpty(administratorGroupName) && processEngineConfiguration.getAdminGroups() == null) {
+      processEngineConfiguration.setAdminGroups(new ArrayList<>());
     }
-    if (!ObjectUtils.isEmpty(administratorUserId)) {
-      if (processEngineConfiguration.getAdminUsers() == null) {
-        processEngineConfiguration.setAdminUsers(new ArrayList<>());
-      }
-      // add the configured administrator to the engine configuration later: potentially needs translation to user ID
+    // the configured administrator is added to the engine configuration later: potentially needs translation to user ID
+    if (!ObjectUtils.isEmpty(administratorUserId) && processEngineConfiguration.getAdminUsers() == null) {
+      processEngineConfiguration.setAdminUsers(new ArrayList<>());
     }
 
     keycloakIdentityProviderFactory = new KeycloakIdentityProviderFactory(this, customHttpRequestInterceptors);
