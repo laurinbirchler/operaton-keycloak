@@ -1,7 +1,5 @@
 package org.operaton.bpm.extension.keycloak.showcase.rest;
 
-import jakarta.inject.Inject;
-
 import org.operaton.bpm.engine.IdentityService;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
@@ -31,23 +29,27 @@ public class RestApiSecurityConfig {
   /**
    * Configuration for REST Api security.
    */
-  @Inject
-  private RestApiSecurityConfigurationProperties configProps;
+  private final RestApiSecurityConfigurationProperties configProps;
 
   /**
    * Access to Operaton's Identity Service.
    */
-  @Inject
-  private IdentityService identityService;
+  private final IdentityService identityService;
 
   /**
    * Access to Spring Security OAuth2 client service.
    */
-  @Inject
-  private OAuth2AuthorizedClientService clientService;
+  private final OAuth2AuthorizedClientService clientService;
 
-  @Inject
-  private ApplicationContext applicationContext;
+  private final ApplicationContext applicationContext;
+
+  public RestApiSecurityConfig(RestApiSecurityConfigurationProperties configProps, IdentityService identityService,
+      OAuth2AuthorizedClientService clientService, ApplicationContext applicationContext) {
+    this.configProps = configProps;
+    this.identityService = identityService;
+    this.clientService = clientService;
+    this.applicationContext = applicationContext;
+  }
 
   /**
    * {@inheritDoc}
