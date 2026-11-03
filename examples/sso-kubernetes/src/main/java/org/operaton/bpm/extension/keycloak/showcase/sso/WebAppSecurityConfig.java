@@ -33,6 +33,13 @@ public class WebAppSecurityConfig {
   @Inject
   private KeycloakLogoutHandler keycloakLogoutHandler;
 
+  /**
+   * Spring's CSRF protection is skipped for {@code /api/**} because the Operaton webapps already protect it with
+   * their own {@code CsrfPreventionFilter} (XSRF-TOKEN cookie / X-XSRF-TOKEN header); enabling both would reject
+   * the webapps' requests. {@code /engine-rest/**} is a stateless API: it is either secured by the bearer-token chain
+   * in {@code RestApiSecurityConfig} or, with {@code rest.security.enabled=false}, deliberately left open.
+   */
+  @SuppressWarnings("java:S4502")
   @Bean
   @Order(2)
   public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
