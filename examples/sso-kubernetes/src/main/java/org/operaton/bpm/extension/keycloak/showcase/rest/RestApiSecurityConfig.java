@@ -26,6 +26,8 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 @ConditionalOnProperty(name = "rest.security.enabled", havingValue = "true", matchIfMissing = true)
 public class RestApiSecurityConfig {
 
+  private static final String OAUTH2_PROVIDER_PROPERTY_PREFIX = "spring.security.oauth2.client.provider.";
+
   /**
    * Configuration for REST Api security.
    */
@@ -58,7 +60,7 @@ public class RestApiSecurityConfig {
   @Order(1)
   public SecurityFilterChain httpSecurityRest(HttpSecurity http, JwtDecoder jwtDecoder) {
     String jwkSetUri = applicationContext.getEnvironment()
-        .getRequiredProperty("spring.security.oauth2.client.provider." + configProps.getProvider() + ".jwk-set-uri");
+        .getRequiredProperty(OAUTH2_PROVIDER_PROPERTY_PREFIX + configProps.getProvider() + ".jwk-set-uri");
     PathPatternRequestMatcher.Builder pathPattern = PathPatternRequestMatcher.withDefaults();
 
     // No explicit CSRF override needed: the OAuth2 resource server configurer already exempts
@@ -79,7 +81,7 @@ public class RestApiSecurityConfig {
   @Bean
   public JwtDecoder jwtDecoder() {
     String issuerUri = applicationContext.getEnvironment()
-        .getRequiredProperty("spring.security.oauth2.client.provider." + configProps.getProvider() + ".issuer-uri");
+        .getRequiredProperty(OAUTH2_PROVIDER_PROPERTY_PREFIX + configProps.getProvider() + ".issuer-uri");
 
     NimbusJwtDecoder jwtDecoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);
 
@@ -101,7 +103,7 @@ public class RestApiSecurityConfig {
   public KeycloakAuthenticationFilter keycloakAuthenticationFilter() {
     String userNameAttribute = this.applicationContext.getEnvironment()
         .getRequiredProperty(
-            "spring.security.oauth2.client.provider." + this.configProps.getProvider() + ".user-name-attribute");
+            OAUTH2_PROVIDER_PROPERTY_PREFIX + this.configProps.getProvider() + ".user-name-attribute");
 
     return new KeycloakAuthenticationFilter(this.identityService, this.clientService, userNameAttribute);
   }
