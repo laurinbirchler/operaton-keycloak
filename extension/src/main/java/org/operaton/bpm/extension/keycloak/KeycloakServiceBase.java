@@ -232,7 +232,7 @@ public abstract class KeycloakServiceBase {
     if (queryParameter == null) {
       return true;
     } else if (attribute == null) {
-      return queryParameter.replaceAll("[%\\*]", "").length() == 0;
+      return queryParameter.replaceAll("[%\\*]", "").isEmpty();
     }
     return attribute.matches(queryParameter.replaceAll("[%\\*]", ".*"));
   }
