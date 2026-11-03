@@ -1,5 +1,8 @@
 package org.operaton.bpm.extension.keycloak.showcase.test.util;
 
+import java.time.Duration;
+
+import org.awaitility.Awaitility;
 import org.operaton.bpm.engine.history.HistoricProcessInstance;
 import org.operaton.bpm.engine.runtime.ProcessInstance;
 import org.operaton.bpm.engine.test.assertions.bpmn.BpmnAwareTests;
@@ -141,23 +144,11 @@ public abstract class ProcessTestAssertions {
      * @param runnable the Runnable to execute
      */
     protected void waitForAssertion(Runnable runnable) { // NOPMD
-      final long maxWait = System.currentTimeMillis() + timeOutMillis;
-      boolean finished = false;
-      while (!finished) {
-        try {
-          runnable.run();
-          finished = true;
-        } catch (AssertionError ex) {
-          if (System.currentTimeMillis() > maxWait) {
-            throw ex;
-          }
-          try {
-            // check every 100 ms
-            Thread.sleep(intervalMillis);
-          } catch (Exception slex) { // NOSONAR
-          }
-        }
-      }
+      Awaitility.await()
+          .atMost(Duration.ofMillis(timeOutMillis))
+          .pollDelay(Duration.ZERO)
+          .pollInterval(Duration.ofMillis(intervalMillis))
+          .untilAsserted(runnable::run);
     }
   }
 

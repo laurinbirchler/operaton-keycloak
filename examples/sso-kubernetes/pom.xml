@@ -94,6 +94,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.awaitility</groupId>
+			<artifactId>awaitility</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- java util logging => slf4j -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
