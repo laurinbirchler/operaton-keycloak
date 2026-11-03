@@ -9,7 +9,7 @@ import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.identity.UserQuery;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakUserQuery;
-import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
+import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderTestPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 
 import static java.util.Arrays.asList;
@@ -77,7 +77,7 @@ class KeycloakUserQueryWithCachingAndCustomCacheExpiryTest extends AbstractKeycl
 
   private static List<String> getCacheEntries() {
     processPendingCacheEvictions();
-    return CacheAwareKeycloakIdentityProviderPluginForTest.userQueryCache.asMap()
+    return CacheAwareKeycloakIdentityProviderTestPlugin.userQueryCache.asMap()
         .keySet()
         .stream()
         .map(CacheableKeycloakUserQuery::getFirstName)
@@ -86,6 +86,6 @@ class KeycloakUserQueryWithCachingAndCustomCacheExpiryTest extends AbstractKeycl
   }
 
   private static void processPendingCacheEvictions() {
-    CacheAwareKeycloakIdentityProviderPluginForTest.userQueryCache.cleanUp();
+    CacheAwareKeycloakIdentityProviderTestPlugin.userQueryCache.cleanUp();
   }
 }

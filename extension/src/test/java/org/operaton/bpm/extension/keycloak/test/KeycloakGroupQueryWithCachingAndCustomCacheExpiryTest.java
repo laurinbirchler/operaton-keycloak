@@ -8,7 +8,7 @@ import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.GroupQuery;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakGroupQuery;
-import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
+import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderTestPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 
 import static java.util.Arrays.asList;
@@ -76,7 +76,7 @@ class KeycloakGroupQueryWithCachingAndCustomCacheExpiryTest extends AbstractKeyc
 
   private static List<String> getCacheEntries() {
     processPendingCacheEvictions();
-    return CacheAwareKeycloakIdentityProviderPluginForTest.groupQueryCache.asMap()
+    return CacheAwareKeycloakIdentityProviderTestPlugin.groupQueryCache.asMap()
         .keySet()
         .stream()
         .map(CacheableKeycloakGroupQuery::getName)
@@ -85,6 +85,6 @@ class KeycloakGroupQueryWithCachingAndCustomCacheExpiryTest extends AbstractKeyc
   }
 
   private static void processPendingCacheEvictions() {
-    CacheAwareKeycloakIdentityProviderPluginForTest.groupQueryCache.cleanUp();
+    CacheAwareKeycloakIdentityProviderTestPlugin.groupQueryCache.cleanUp();
   }
 }

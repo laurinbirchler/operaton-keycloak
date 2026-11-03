@@ -8,7 +8,7 @@ import org.operaton.bpm.engine.identity.Group;
 import org.operaton.bpm.engine.identity.GroupQuery;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakGroupQuery;
-import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
+import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderTestPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 
 import static java.util.Arrays.asList;
@@ -80,12 +80,12 @@ class KeycloakGroupQueryWithCachingAndMaxSizeTest extends AbstractKeycloakIdenti
 
   private static Group queryGroup(GroupQuery query, String groupName) {
     Group group = query.groupName(groupName).singleResult();
-    CacheAwareKeycloakIdentityProviderPluginForTest.groupQueryCache.cleanUp();
+    CacheAwareKeycloakIdentityProviderTestPlugin.groupQueryCache.cleanUp();
     return group;
   }
 
   private static List<String> getCacheEntries() {
-    return CacheAwareKeycloakIdentityProviderPluginForTest.groupQueryCache.asMap()
+    return CacheAwareKeycloakIdentityProviderTestPlugin.groupQueryCache.asMap()
         .keySet()
         .stream()
         .map(CacheableKeycloakGroupQuery::getName)

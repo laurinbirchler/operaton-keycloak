@@ -30,7 +30,7 @@
     
   </bean>
   
-  <bean id="keycloakIdentityProviderPlugin" class="org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest">
+  <bean id="keycloakIdentityProviderPlugin" class="org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderTestPlugin">
   
     <property name="keycloakIssuerUrl" value="http://localhost:9000/realms/test" />
     <property name="keycloakAdminUrl" value="http://localhost:9000/admin/realms/test" />

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakCheckPasswordCall;
-import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
+import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderTestPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 import org.operaton.bpm.extension.keycloak.test.util.PredictableTicker;
 
@@ -209,7 +209,7 @@ class KeycloakLoginWithCachingTest extends AbstractKeycloakIdentityProviderTest 
   }
 
   private static List<String> getCacheEntries() {
-    return CacheAwareKeycloakIdentityProviderPluginForTest.checkPasswordCache.asMap()
+    return CacheAwareKeycloakIdentityProviderTestPlugin.checkPasswordCache.asMap()
         .keySet()
         .stream()
         .map(CacheableKeycloakCheckPasswordCall::getUserId)

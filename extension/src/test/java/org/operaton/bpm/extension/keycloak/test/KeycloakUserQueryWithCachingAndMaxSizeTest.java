@@ -9,7 +9,7 @@ import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.identity.UserQuery;
 import org.operaton.bpm.engine.test.junit5.ProcessEngineExtension;
 import org.operaton.bpm.extension.keycloak.CacheableKeycloakUserQuery;
-import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderPluginForTest;
+import org.operaton.bpm.extension.keycloak.test.util.CacheAwareKeycloakIdentityProviderTestPlugin;
 import org.operaton.bpm.extension.keycloak.test.util.CountingHttpRequestInterceptor;
 
 import static java.util.Arrays.asList;
@@ -81,12 +81,12 @@ class KeycloakUserQueryWithCachingAndMaxSizeTest extends AbstractKeycloakIdentit
 
   private static User queryUser(UserQuery query, String firstName) {
     User user = query.userFirstName(firstName).singleResult();
-    CacheAwareKeycloakIdentityProviderPluginForTest.userQueryCache.cleanUp();
+    CacheAwareKeycloakIdentityProviderTestPlugin.userQueryCache.cleanUp();
     return user;
   }
 
   private static List<String> getCacheEntries() {
-    return CacheAwareKeycloakIdentityProviderPluginForTest.userQueryCache.asMap()
+    return CacheAwareKeycloakIdentityProviderTestPlugin.userQueryCache.asMap()
         .keySet()
         .stream()
         .map(CacheableKeycloakUserQuery::getFirstName)

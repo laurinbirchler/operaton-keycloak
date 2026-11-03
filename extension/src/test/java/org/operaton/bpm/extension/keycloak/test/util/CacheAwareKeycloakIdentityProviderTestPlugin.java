@@ -15,7 +15,7 @@ import org.operaton.bpm.extension.keycloak.cache.CacheConfiguration;
 import org.operaton.bpm.extension.keycloak.cache.CaffeineCache;
 import org.operaton.bpm.extension.keycloak.plugin.KeycloakIdentityProviderPlugin;
 
-public class CacheAwareKeycloakIdentityProviderPluginForTest extends KeycloakIdentityProviderPlugin {
+public class CacheAwareKeycloakIdentityProviderTestPlugin extends KeycloakIdentityProviderPlugin {
 
   public static CaffeineCache<CacheableKeycloakUserQuery, List<User>> userQueryCache;
   public static CaffeineCache<CacheableKeycloakGroupQuery, List<Group>> groupQueryCache;
