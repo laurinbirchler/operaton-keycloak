@@ -2,8 +2,6 @@ package org.operaton.bpm.extension.keycloak.showcase.sso;
 
 import java.util.Collections;
 
-import jakarta.inject.Inject;
-
 import org.operaton.bpm.webapp.impl.security.auth.ContainerBasedAuthenticationFilter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -30,9 +28,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class WebAppSecurityConfig {
 
-  @Inject
-  private KeycloakLogoutHandler keycloakLogoutHandler;
-
   /**
    * Spring's CSRF protection is skipped for {@code /api/**} because the Operaton webapps already protect it with
    * their own {@code CsrfPreventionFilter} (XSRF-TOKEN cookie / X-XSRF-TOKEN header); enabling both would reject
@@ -42,7 +37,7 @@ public class WebAppSecurityConfig {
   @SuppressWarnings("java:S4502")
   @Bean
   @Order(2)
-  public SecurityFilterChain httpSecurity(HttpSecurity http) throws Exception {
+  public SecurityFilterChain httpSecurity(HttpSecurity http, KeycloakLogoutHandler keycloakLogoutHandler) throws Exception {
     PathPatternRequestMatcher.Builder pathPattern = PathPatternRequestMatcher.withDefaults();
     return http.csrf(csrf -> csrf.ignoringRequestMatchers(pathPattern.matcher("/api/**"), pathPattern.matcher("/engine-rest/**")))
         .authorizeHttpRequests(authorize -> authorize.requestMatchers(pathPattern.matcher("/assets/**"), pathPattern.matcher("/app/**"),
