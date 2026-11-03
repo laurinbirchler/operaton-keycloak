@@ -40,6 +40,9 @@ public class KeycloakUserService extends KeycloakServiceBase {
   public static final String MEMBER_EMAIL = "email";
   public static final String MEMBER_USERNAME = "username";
   public static final String MEMBER_ID = "id";
+  private static final String MEMBER_FIRST_NAME = "firstName";
+  private static final String MEMBER_LAST_NAME = "lastName";
+  private static final String LIKE_WILDCARDS = "[%,\\*]";
 
   /**
    * Default constructor.
@@ -350,19 +353,19 @@ public class KeycloakUserService extends KeycloakServiceBase {
       addArgument(filter, MEMBER_EMAIL, query.getEmail());
     }
     if (StringUtils.hasLength(query.getEmailLike())) {
-      addArgument(filter, MEMBER_EMAIL, query.getEmailLike().replaceAll("[%,\\*]", ""));
+      addArgument(filter, MEMBER_EMAIL, query.getEmailLike().replaceAll(LIKE_WILDCARDS, ""));
     }
     if (StringUtils.hasLength(query.getFirstName())) {
-      addArgument(filter, "firstName", query.getFirstName());
+      addArgument(filter, MEMBER_FIRST_NAME, query.getFirstName());
     }
     if (StringUtils.hasLength(query.getFirstNameLike())) {
-      addArgument(filter, "firstName", query.getFirstNameLike().replaceAll("[%,\\*]", ""));
+      addArgument(filter, MEMBER_FIRST_NAME, query.getFirstNameLike().replaceAll(LIKE_WILDCARDS, ""));
     }
     if (StringUtils.hasLength(query.getLastName())) {
-      addArgument(filter, "lastName", query.getLastName());
+      addArgument(filter, MEMBER_LAST_NAME, query.getLastName());
     }
     if (StringUtils.hasLength(query.getLastNameLike())) {
-      addArgument(filter, "lastName", query.getLastNameLike().replaceAll("[%,\\*]", ""));
+      addArgument(filter, MEMBER_LAST_NAME, query.getLastNameLike().replaceAll(LIKE_WILDCARDS, ""));
     }
     addArgument(filter, "max", getMaxQueryResultSize());
     if (!filter.isEmpty()) {
@@ -424,8 +427,8 @@ public class KeycloakUserService extends KeycloakServiceBase {
     } else {
       user.setId(getJsonString(result, MEMBER_ID));
     }
-    user.setFirstName(getJsonString(result, "firstName"));
-    user.setLastName(getJsonString(result, "lastName"));
+    user.setFirstName(getJsonString(result, MEMBER_FIRST_NAME));
+    user.setLastName(getJsonString(result, MEMBER_LAST_NAME));
     if (!StringUtils.hasLength(user.getFirstName()) && !StringUtils.hasLength(user.getLastName())) {
       user.setFirstName(getJsonString(result, MEMBER_USERNAME));
     }
