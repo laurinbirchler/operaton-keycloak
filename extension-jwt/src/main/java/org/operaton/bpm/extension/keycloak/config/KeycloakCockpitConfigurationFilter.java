@@ -10,7 +10,12 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 
 public class KeycloakCockpitConfigurationFilter implements Filter {
-  public static String KEYCLOAK_OPTIONS_PATH = "/app/keycloak/keycloak-options.json";
+  /**
+   * Fixed path of the options endpoint, relative to the webapp application path. Not configurable on purpose:
+   * {@code identity-keycloak-auth.js} fetches the options from exactly this location.
+   */
+  @SuppressWarnings("java:S1075")
+  public static final String KEYCLOAK_OPTIONS_PATH = "/app/keycloak/keycloak-options.json";
 
   KeycloakCockpitConfiguration configuration;
 
