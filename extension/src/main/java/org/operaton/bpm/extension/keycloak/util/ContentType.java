@@ -1,6 +1,10 @@
 package org.operaton.bpm.extension.keycloak.util;
 
-public class ContentType {
+public final class ContentType {
+
+  private ContentType() {
+    // utility class
+  }
 
   public static final String APPLICATION_FORM_URLENCODED = "application/x-www-form-urlencoded";
 

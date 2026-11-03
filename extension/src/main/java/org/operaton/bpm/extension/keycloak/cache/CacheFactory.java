@@ -3,7 +3,11 @@ package org.operaton.bpm.extension.keycloak.cache;
 /**
  * Factory for creating a QueryCache.
  */
-public class CacheFactory {
+public final class CacheFactory {
+
+  private CacheFactory() {
+    // utility class
+  }
 
   /**
    * Creates implementations of QueryCache based on the provided configuration.
