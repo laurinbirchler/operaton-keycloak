@@ -74,27 +74,7 @@ public class KeycloakIdentityProviderFactory implements SessionFactory {
     PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder.create()
         .setMaxConnTotal(keycloakConfiguration.getMaxHttpConnections());
 
-    if (keycloakConfiguration.isDisableSSLCertificateValidation()) {
-      try {
-        SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(TrustAllStrategy.INSTANCE).build();
-        DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
-        connectionManagerBuilder.setTlsSocketStrategy(tlsStrategy);
-      } catch (GeneralSecurityException e) {
-        throw new IdentityProviderException("Disabling SSL certificate validation failed", e);
-      }
-    } else if (keycloakConfiguration.getTruststore() != null && !keycloakConfiguration.getTruststore().isBlank()) {
-      // configure truststore if set
-      File file = new File(keycloakConfiguration.getTruststore());
-      String truststorePassword = keycloakConfiguration.getTruststorePassword();
-      char[] truststorePasswordCharArray = truststorePassword == null ? null : truststorePassword.toCharArray();
-      try {
-        SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(file, truststorePasswordCharArray).build();
-        DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext);
-        connectionManagerBuilder.setTlsSocketStrategy(tlsStrategy);
-      } catch (GeneralSecurityException | IOException e) {
-        throw new IdentityProviderException("Configuring truststore failed", e);
-      }
-    }
+    configureTlsStrategy(keycloakConfiguration, connectionManagerBuilder);
 
     final CredentialsStore credentialsProvider = new BasicCredentialsProvider();
     HttpClientBuilder httpClientBuilder = HttpClientBuilder.create()
@@ -132,6 +112,38 @@ public class KeycloakIdentityProviderFactory implements SessionFactory {
 
     // Create Keycloak context provider for access token handling
     keycloakContextProvider = new KeycloakContextProvider(keycloakConfiguration, restTemplate);
+  }
+
+  /**
+   * Configures the TLS strategy of the HTTP connection manager: either trust all certificates
+   * (SSL certificate validation disabled) or use the configured truststore, if any.
+   *
+   * @param keycloakConfiguration    the Keycloak configuration
+   * @param connectionManagerBuilder the connection manager builder to configure
+   */
+  private static void configureTlsStrategy(KeycloakConfiguration keycloakConfiguration,
+                                           PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder) {
+    if (keycloakConfiguration.isDisableSSLCertificateValidation()) {
+      try {
+        SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(TrustAllStrategy.INSTANCE).build();
+        DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext, NoopHostnameVerifier.INSTANCE);
+        connectionManagerBuilder.setTlsSocketStrategy(tlsStrategy);
+      } catch (GeneralSecurityException e) {
+        throw new IdentityProviderException("Disabling SSL certificate validation failed", e);
+      }
+    } else if (keycloakConfiguration.getTruststore() != null && !keycloakConfiguration.getTruststore().isBlank()) {
+      // configure truststore if set
+      File file = new File(keycloakConfiguration.getTruststore());
+      String truststorePassword = keycloakConfiguration.getTruststorePassword();
+      char[] truststorePasswordCharArray = truststorePassword == null ? null : truststorePassword.toCharArray();
+      try {
+        SSLContext sslContext = SSLContextBuilder.create().loadTrustMaterial(file, truststorePasswordCharArray).build();
+        DefaultClientTlsStrategy tlsStrategy = new DefaultClientTlsStrategy(sslContext);
+        connectionManagerBuilder.setTlsSocketStrategy(tlsStrategy);
+      } catch (GeneralSecurityException | IOException e) {
+        throw new IdentityProviderException("Configuring truststore failed", e);
+      }
+    }
   }
 
   /**
