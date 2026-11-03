@@ -426,7 +426,7 @@ public class KeycloakGroupService extends KeycloakServiceBase {
     try {
       JsonArray types = getJsonArray(getJsonObject(result, "attributes"), "type");
       for (int i = 0; i < types.size(); i++) {
-        if (Groups.GROUP_TYPE_SYSTEM.equals(getJsonStringAtIndex(types, i).toUpperCase())) {
+        if (Groups.GROUP_TYPE_SYSTEM.equalsIgnoreCase(getJsonStringAtIndex(types, i))) {
           return true;
         }
       }
