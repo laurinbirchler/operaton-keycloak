@@ -261,11 +261,8 @@ public class KeycloakUserService extends KeycloakServiceBase {
         && !StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_EMAIL))) {
       return false;
     }
-    if (keycloakConfiguration.isUseUsernameAsOperatonUserId()
-        && !StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_USERNAME))) {
-      return false;
-    }
-    return true;
+    return !keycloakConfiguration.isUseUsernameAsOperatonUserId()
+        || StringUtils.hasLength(getJsonString(keycloakUser, MEMBER_USERNAME));
   }
 
   /**
