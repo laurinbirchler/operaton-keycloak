@@ -11,6 +11,8 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     env:
+      # TODO: add the SONAR_TOKEN repository secret and turn off Automatic Analysis in SonarCloud
+      # (Administration > Analysis Method), otherwise the analysis step never runs
       # SONAR_TOKEN is not available on PRs from forks: the analysis step skips itself there
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
