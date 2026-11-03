@@ -27,6 +27,17 @@
 
     <!-- Set to false for each module that must be deployed -->
     <deploy.skip>true</deploy.skip>
+
+    <!-- SonarCloud analysis, run from CI like in operaton/operaton -->
+    <sonar.organization>operaton</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    <sonar.projectKey>operaton_operaton-keycloak</sonar.projectKey>
+    <!-- JaCoCo is skipped by default, the build workflow enables it with -Djacoco.skip=false.
+         Its report goal writes to target/site/jacoco. -->
+    <jacoco.skip>true</jacoco.skip>
+    <sonar.coverage.jacoco.xmlReportPaths>**/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+    <!-- keycloak.js is a vendored third-party bundle (keycloak-js, js-sha256, es6-promise) -->
+    <sonar.exclusions>**/identity-keycloak/scripts/keycloak.js</sonar.exclusions>
   </properties>
 
   <url>http://www.operaton.org</url>
@@ -108,6 +119,25 @@
     <defaultGoal>verify</defaultGoal>
     <plugins>
       <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>prepare-agent</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
         <version>3.5.1</version>
@@ -171,6 +201,11 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>3.6.1</version>
+        </plugin>
+        <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>0.8.16</version>
         </plugin>
       </plugins>
     </pluginManagement>

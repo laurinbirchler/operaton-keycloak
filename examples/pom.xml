@@ -16,6 +16,11 @@
   <name>Operaton - engine plugins - identity - keycloak - examples</name>
   <description>Operaton Keycloak Identity Provider Plugin Examples</description>
 
+  <properties>
+    <!-- the examples are showcases, not shipped code: no coverage required -->
+    <sonar.coverage.exclusions>**</sonar.coverage.exclusions>
+  </properties>
+
   <modules>
     <module>sso-kubernetes</module>
     <module>jwt</module>

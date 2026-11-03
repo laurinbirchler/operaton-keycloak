@@ -10,9 +10,15 @@ on:
 jobs:
   build:
     runs-on: ubuntu-24.04
+    env:
+      # SONAR_TOKEN is not available on PRs from forks: the analysis step skips itself there
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
     steps:
     - name: Checkout
       uses: actions/checkout@v7
+      with:
+        # full history so SonarCloud can assign new code and blame
+        fetch-depth: 0
     - name: Java setup
       uses: actions/setup-java@v6
       with:
@@ -26,5 +32,18 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
     - name: Run Maven
-      run: mvn -B clean verify
+      run: mvn -B clean verify -Djacoco.skip=false
+    - name: Cache SonarCloud packages
+      if: env.SONAR_TOKEN != ''
+      uses: actions/cache@v6
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+    - name: SonarCloud analysis
+      if: env.SONAR_TOKEN != ''
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+      continue-on-error: true
 #      run: mvn -B clean install com.mycila:license-maven-plugin:check
