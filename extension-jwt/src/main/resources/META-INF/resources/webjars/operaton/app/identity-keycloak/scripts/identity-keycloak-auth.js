@@ -5,7 +5,7 @@ if (window.location.hash === '#/login') {
     window.location.hash = "";
 }
 
-let operatonIdentityKeycloak = undefined;
+let operatonIdentityKeycloak;
 
 const portalName = document.querySelector('base').attributes['app-root'].value;
 
@@ -36,7 +36,7 @@ await fetchKeycloakOptions(portalName+"/app/keycloak/keycloak-options.json")
                     const constantMock = window.fetch;
                     window.fetch = function () {
                         if (arguments[0].startsWith("/") || arguments[0].startsWith(window.location.origin)) {
-                            var args = Object.assign({}, arguments[1]);
+                            const args = { ...arguments[1] };
                             if (!args.headers) {
                                 args.headers = new Headers();
                             }
