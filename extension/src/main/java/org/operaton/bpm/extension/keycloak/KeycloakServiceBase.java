@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 import com.google.gson.JsonArray;
@@ -29,6 +30,8 @@ import static org.operaton.bpm.extension.keycloak.json.JsonUtil.parseAsJsonObjec
  * Provides general helper methods.
  */
 public abstract class KeycloakServiceBase {
+
+  private static final Comparator<String> NULL_SAFE_STRING_COMPARATOR = Comparator.nullsFirst(Comparator.naturalOrder());
 
   protected KeycloakConfiguration keycloakConfiguration;
   protected KeycloakRestTemplate restTemplate;
@@ -212,16 +215,7 @@ public abstract class KeycloakServiceBase {
    * @return 0 if both strings are equal; -1 if string 1 is less, +1 if string 1 is greater than string 2
    */
   protected static int compare(final String str1, final String str2) {
-    if (str1 == str2) {
-      return 0;
-    }
-    if (str1 == null) {
-      return -1;
-    }
-    if (str2 == null) {
-      return 1;
-    }
-    return str1.compareTo(str2);
+    return NULL_SAFE_STRING_COMPARATOR.compare(str1, str2);
   }
 
   /**
