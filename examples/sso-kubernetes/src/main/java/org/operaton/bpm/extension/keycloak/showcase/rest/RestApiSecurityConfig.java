@@ -56,7 +56,7 @@ public class RestApiSecurityConfig {
    */
   @Bean
   @Order(1)
-  public SecurityFilterChain httpSecurityRest(HttpSecurity http, JwtDecoder jwtDecoder) throws Exception {
+  public SecurityFilterChain httpSecurityRest(HttpSecurity http, JwtDecoder jwtDecoder) {
     String jwkSetUri = applicationContext.getEnvironment()
         .getRequiredProperty("spring.security.oauth2.client.provider." + configProps.getProvider() + ".jwk-set-uri");
     PathPatternRequestMatcher.Builder pathPattern = PathPatternRequestMatcher.withDefaults();

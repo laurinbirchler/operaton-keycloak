@@ -37,7 +37,7 @@ public class WebAppSecurityConfig {
   @SuppressWarnings("java:S4502")
   @Bean
   @Order(2)
-  public SecurityFilterChain httpSecurity(HttpSecurity http, KeycloakLogoutHandler keycloakLogoutHandler) throws Exception {
+  public SecurityFilterChain httpSecurity(HttpSecurity http, KeycloakLogoutHandler keycloakLogoutHandler) {
     PathPatternRequestMatcher.Builder pathPattern = PathPatternRequestMatcher.withDefaults();
     return http.csrf(csrf -> csrf.ignoringRequestMatchers(pathPattern.matcher("/api/**"), pathPattern.matcher("/engine-rest/**")))
         .authorizeHttpRequests(authorize -> authorize.requestMatchers(pathPattern.matcher("/assets/**"), pathPattern.matcher("/app/**"),
