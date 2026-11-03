@@ -90,12 +90,7 @@ class KeycloakGroupQueryTest extends AbstractKeycloakIdentityProviderTest {
     }
   }
 
-  /* The REST API of Keycloak (get list(!) of groups) does not deliver group attributes :-(
-  public void testFilterByGroupType() {
-    List<Group> result = identityService.createGroupQuery().groupType("SYSTEM").list();
-    assertEquals(2, result.size());
-  }
-  */
+  // Filtering by group type alone is not tested: the Keycloak REST API (list of groups) does not deliver group attributes.
 
   @Test
   void filterByGroupTypeAndGroupId() {
