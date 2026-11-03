@@ -63,54 +63,83 @@ public class KeycloakGroupService extends KeycloakServiceBase {
    * @return the corresponding keycloak group ID to use: either internal keycloak ID or path, depending on config
    */
   public String getKeycloakAdminGroupId(String configuredAdminGroupName) {
+    // check whether configured admin group can be resolved as path
+    String adminGroupId = findAdminGroupIdByPath(configuredAdminGroupName);
+    if (adminGroupId != null) {
+      return adminGroupId;
+    }
     try {
-      // check whether configured admin group can be resolved as path
-      try {
-        ResponseEntity<String> response = restTemplate.exchange(
-            keycloakConfiguration.getKeycloakAdminUrl() + "/group-by-path/" + configuredAdminGroupName, HttpMethod.GET,
-            String.class);
-        if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
-          return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "path").substring(1); // remove trailing '/'
-        }
-        return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "id");
-      } catch (RestClientException | JsonException ex) {
-        // group not found: fall through
-      }
-
       // check whether configured admin group can be resolved as group name
-      try {
-        ResponseEntity<String> response = restTemplate.exchange(
-            keycloakConfiguration.getKeycloakAdminUrl() + "/groups?search=" + configuredAdminGroupName, HttpMethod.GET,
-            String.class);
-        // filter search result for exact group name, including subgroups
-        JsonArray result = flattenSubGroups(parseAsJsonArray(response.getBody()), new JsonArray());
-        JsonArray groups = new JsonArray();
-        for (int i = 0; i < result.size(); i++) {
-          JsonObject keycloakGroup = getJsonObjectAtIndex(result, i);
-          if (getOptJsonString(keycloakGroup, "name").equals(configuredAdminGroupName)) {
-            groups.add(keycloakGroup);
-          }
-        }
-        if (groups.size() == 1) {
-          if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
-            return getJsonString(getJsonObjectAtIndex(groups, 0), "path").substring(1); // remove trailing '/'
-          }
-          return getJsonString(getJsonObjectAtIndex(groups, 0), "id");
-        } else if (!groups.isEmpty()) {
-          throw new IdentityProviderException("Configured administratorGroupName " + configuredAdminGroupName
-              + " is not unique. Please configure exact group path.");
-        }
-        // groups size == 0: fall through
-      } catch (JsonException je) {
-        // group not found: fall through
-      }
-
-      // keycloak admin group does not exist :-(
-      throw new IdentityProviderException(
-          "Configured administratorGroupName " + configuredAdminGroupName + " does not exist.");
+      adminGroupId = findAdminGroupIdByName(configuredAdminGroupName);
     } catch (RestClientException rce) {
       throw new IdentityProviderException(
           "Unable to read data of configured administratorGroupName " + configuredAdminGroupName, rce);
+    }
+    if (adminGroupId != null) {
+      return adminGroupId;
+    }
+    // keycloak admin group does not exist :-(
+    throw new IdentityProviderException(
+        "Configured administratorGroupName " + configuredAdminGroupName + " does not exist.");
+  }
+
+  /**
+   * Resolves the configured admin group as group path.
+   *
+   * @param configuredAdminGroupName the originally configured admin group name
+   * @return the group ID to use or {@code null} if no group with this path exists
+   */
+  private String findAdminGroupIdByPath(String configuredAdminGroupName) {
+    try {
+      ResponseEntity<String> response = restTemplate.exchange(
+          keycloakConfiguration.getKeycloakAdminUrl() + "/group-by-path/" + configuredAdminGroupName, HttpMethod.GET,
+          String.class);
+      if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
+        return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "path").substring(1); // remove trailing '/'
+      }
+      return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "id");
+    } catch (RestClientException | JsonException ex) {
+      // group not found
+      return null;
+    }
+  }
+
+  /**
+   * Resolves the configured admin group as group name, including subgroups.
+   *
+   * @param configuredAdminGroupName the originally configured admin group name
+   * @return the group ID to use or {@code null} if no group with this name exists
+   * @throws IdentityProviderException in case the group name is not unique
+   * @throws RestClientException       in case of technical errors
+   */
+  private String findAdminGroupIdByName(String configuredAdminGroupName) throws RestClientException {
+    try {
+      ResponseEntity<String> response = restTemplate.exchange(
+          keycloakConfiguration.getKeycloakAdminUrl() + "/groups?search=" + configuredAdminGroupName, HttpMethod.GET,
+          String.class);
+      // filter search result for exact group name, including subgroups
+      JsonArray result = flattenSubGroups(parseAsJsonArray(response.getBody()), new JsonArray());
+      JsonArray groups = new JsonArray();
+      for (int i = 0; i < result.size(); i++) {
+        JsonObject keycloakGroup = getJsonObjectAtIndex(result, i);
+        if (getOptJsonString(keycloakGroup, "name").equals(configuredAdminGroupName)) {
+          groups.add(keycloakGroup);
+        }
+      }
+      if (groups.size() > 1) {
+        throw new IdentityProviderException("Configured administratorGroupName " + configuredAdminGroupName
+            + " is not unique. Please configure exact group path.");
+      }
+      if (groups.isEmpty()) {
+        return null;
+      }
+      if (keycloakConfiguration.isUseGroupPathAsOperatonGroupId()) {
+        return getJsonString(getJsonObjectAtIndex(groups, 0), "path").substring(1); // remove trailing '/'
+      }
+      return getJsonString(getJsonObjectAtIndex(groups, 0), "id");
+    } catch (JsonException je) {
+      // group not found
+      return null;
     }
   }
 
