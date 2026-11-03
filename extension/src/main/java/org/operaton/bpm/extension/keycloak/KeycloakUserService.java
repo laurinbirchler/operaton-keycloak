@@ -63,55 +63,81 @@ public class KeycloakUserService extends KeycloakServiceBase {
    * @return the corresponding keycloak user ID to use: either internal keycloak ID, username or email, depending on config
    */
   public String getKeycloakAdminUserId(String configuredAdminUserId) {
+    // check whether configured admin user ID can be resolved as a real keycloak user ID
+    String adminUserId = findAdminUserIdByKeycloakId(configuredAdminUserId);
+    if (adminUserId != null) {
+      return adminUserId;
+    }
     try {
-      // check whether configured admin user ID can be resolved as a real keycloak user ID
-      try {
-        ResponseEntity<String> response = restTemplate.exchange(
-            keycloakConfiguration.getKeycloakAdminUrl() + "/users/" + configuredAdminUserId, HttpMethod.GET,
-            String.class);
-        if (keycloakConfiguration.isUseEmailAsOperatonUserId()) {
-          return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_EMAIL);
-        }
-        if (keycloakConfiguration.isUseUsernameAsOperatonUserId()) {
-          return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_USERNAME);
-        }
-        return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_ID);
-      } catch (RestClientException | JsonException ex) {
-        // user ID not found: fall through
-      }
       // check whether configured admin user ID can be resolved as email address
-      if (keycloakConfiguration.isUseEmailAsOperatonUserId() && configuredAdminUserId.contains("@")) {
-        try {
-          getKeycloakUserID(configuredAdminUserId);
-          return configuredAdminUserId;
-        } catch (KeycloakUserNotFoundException e) {
-          // email not found: fall through
-        }
+      if (keycloakConfiguration.isUseEmailAsOperatonUserId() && configuredAdminUserId.contains("@")
+          && findKeycloakUserID(configuredAdminUserId) != null) {
+        return configuredAdminUserId;
       }
       // check whether configured admin user ID can be resolved as username
-      try {
-        ResponseEntity<String> response = restTemplate.exchange(
-            keycloakConfiguration.getKeycloakAdminUrl() + "/users?exact=true&username=" + configuredAdminUserId,
-            HttpMethod.GET, String.class);
-        JsonObject user = findFirst(parseAsJsonArray(response.getBody()), MEMBER_USERNAME, configuredAdminUserId);
-        if (user != null) {
-          if (keycloakConfiguration.isUseEmailAsOperatonUserId()) {
-            return getJsonString(user, MEMBER_EMAIL);
-          }
-          if (keycloakConfiguration.isUseUsernameAsOperatonUserId()) {
-            return getJsonString(user, MEMBER_USERNAME);
-          }
-          return getJsonString(user, MEMBER_ID);
-        }
-      } catch (JsonException je) {
-        // username not found: fall through
-      }
-      // keycloak admin user does not exist :-(
-      throw new IdentityProviderException(
-          "Configured administratorUserId " + configuredAdminUserId + " does not exist.");
+      adminUserId = findAdminUserIdByUsername(configuredAdminUserId);
     } catch (RestClientException rce) {
       throw new IdentityProviderException(
           "Unable to read data of configured administratorUserId " + configuredAdminUserId, rce);
+    }
+    if (adminUserId != null) {
+      return adminUserId;
+    }
+    // keycloak admin user does not exist :-(
+    throw new IdentityProviderException(
+        "Configured administratorUserId " + configuredAdminUserId + " does not exist.");
+  }
+
+  /**
+   * Resolves the configured admin user ID as Keycloak internal user ID.
+   *
+   * @param configuredAdminUserId the originally configured admin user ID
+   * @return the user ID to use or {@code null} if no user with this Keycloak ID exists
+   */
+  private String findAdminUserIdByKeycloakId(String configuredAdminUserId) {
+    try {
+      ResponseEntity<String> response = restTemplate.exchange(
+          keycloakConfiguration.getKeycloakAdminUrl() + "/users/" + configuredAdminUserId, HttpMethod.GET,
+          String.class);
+      if (keycloakConfiguration.isUseEmailAsOperatonUserId()) {
+        return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_EMAIL);
+      }
+      if (keycloakConfiguration.isUseUsernameAsOperatonUserId()) {
+        return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_USERNAME);
+      }
+      return parseAsJsonObjectAndGetMemberAsString(response.getBody(), MEMBER_ID);
+    } catch (RestClientException | JsonException ex) {
+      // user ID not found
+      return null;
+    }
+  }
+
+  /**
+   * Resolves the configured admin user ID as username.
+   *
+   * @param configuredAdminUserId the originally configured admin user ID
+   * @return the user ID to use or {@code null} if no user with this username exists
+   * @throws RestClientException in case of technical errors
+   */
+  private String findAdminUserIdByUsername(String configuredAdminUserId) throws RestClientException {
+    try {
+      ResponseEntity<String> response = restTemplate.exchange(
+          keycloakConfiguration.getKeycloakAdminUrl() + "/users?exact=true&username=" + configuredAdminUserId,
+          HttpMethod.GET, String.class);
+      JsonObject user = findFirst(parseAsJsonArray(response.getBody()), MEMBER_USERNAME, configuredAdminUserId);
+      if (user == null) {
+        return null;
+      }
+      if (keycloakConfiguration.isUseEmailAsOperatonUserId()) {
+        return getJsonString(user, MEMBER_EMAIL);
+      }
+      if (keycloakConfiguration.isUseUsernameAsOperatonUserId()) {
+        return getJsonString(user, MEMBER_USERNAME);
+      }
+      return getJsonString(user, MEMBER_ID);
+    } catch (JsonException je) {
+      // username not found
+      return null;
     }
   }
 
