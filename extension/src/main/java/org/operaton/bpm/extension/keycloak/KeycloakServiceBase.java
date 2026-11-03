@@ -98,6 +98,21 @@ public abstract class KeycloakServiceBase {
   }
 
   /**
+   * Gets the Keycloak internal ID of an user, or {@code null} if the user cannot be found.
+   *
+   * @param userId the userId as sent by the client
+   * @return the Keycloak internal ID or {@code null}
+   * @throws RestClientException in case of technical errors
+   */
+  protected String findKeycloakUserID(String userId) throws RestClientException {
+    try {
+      return getKeycloakUserID(userId);
+    } catch (KeycloakUserNotFoundException e) {
+      return null;
+    }
+  }
+
+  /**
    * Gets the Keycloak internal ID of a group.
    *
    * @param groupId the userId as sent by the client
@@ -119,6 +134,21 @@ public abstract class KeycloakServiceBase {
       return parseAsJsonObjectAndGetMemberAsString(response.getBody(), "id");
     } catch (JsonException je) {
       throw new KeycloakGroupNotFoundException(groupId + " not found - path unknown", je);
+    }
+  }
+
+  /**
+   * Gets the Keycloak internal ID of a group, or {@code null} if the group cannot be found.
+   *
+   * @param groupId the groupId as sent by the client
+   * @return the Keycloak internal ID or {@code null}
+   * @throws RestClientException in case of technical errors
+   */
+  protected String findKeycloakGroupID(String groupId) throws RestClientException {
+    try {
+      return getKeycloakGroupID(groupId);
+    } catch (KeycloakGroupNotFoundException e) {
+      return null;
     }
   }
 

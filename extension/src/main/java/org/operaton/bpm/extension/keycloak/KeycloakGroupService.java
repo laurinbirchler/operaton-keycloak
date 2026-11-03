@@ -126,10 +126,8 @@ public class KeycloakGroupService extends KeycloakServiceBase {
 
     try {
       //  get Keycloak specific userID
-      String keyCloakID;
-      try {
-        keyCloakID = getKeycloakUserID(userId);
-      } catch (KeycloakUserNotFoundException e) {
+      String keyCloakID = findKeycloakUserID(userId);
+      if (keyCloakID == null) {
         // user not found: empty search result
         return Collections.emptyList();
       }
