@@ -407,7 +407,7 @@ public abstract class AbstractKeycloakIdentityProviderTest {
     HttpEntity<String> request = new HttpEntity<>(realmData, headers);
     ResponseEntity<String> response = REST_TEMPLATE.postForEntity(keycloakUrl + "/admin/realms", request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-    LOG.info("Created realm " + realm);
+    LOG.info("Created realm {}", realm);
   }
 
   /**
@@ -512,7 +512,7 @@ public abstract class AbstractKeycloakIdentityProviderTest {
             + realmManagementId, request, String.class);
     assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
 
-    LOG.info("Created client " + clientId);
+    LOG.info("Created client {}", clientId);
     return clientSecret;
   }
 
