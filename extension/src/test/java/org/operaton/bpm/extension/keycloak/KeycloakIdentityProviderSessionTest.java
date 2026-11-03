@@ -3,8 +3,6 @@ package org.operaton.bpm.extension.keycloak;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
-import org.operaton.bpm.engine.identity.Group;
-import org.operaton.bpm.engine.identity.User;
 import org.operaton.bpm.engine.impl.identity.IdentityProviderException;
 import org.operaton.bpm.extension.keycloak.cache.PassThroughCache;
 import org.operaton.bpm.extension.keycloak.rest.KeycloakRestTemplate;
