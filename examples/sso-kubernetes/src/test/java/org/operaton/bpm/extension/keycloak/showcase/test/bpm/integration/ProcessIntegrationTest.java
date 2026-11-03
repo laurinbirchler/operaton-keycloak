@@ -79,8 +79,6 @@ class ProcessIntegrationTest {
     // check corresponding process end
     assertThat(pi).hasPassed("END_APPROVED");
     assertThat(pi).isEnded();
-
-    // TODO: insert assertions checking your local business logic impacts
   }
 
   /**
@@ -102,7 +100,5 @@ class ProcessIntegrationTest {
     // check corresponding process end
     assertThat(pi).hasPassed("END_NOT_APPROVED");
     assertThat(pi).isEnded();
-
-    // TODO: insert assertions checking your local business logic impacts
   }
 }
